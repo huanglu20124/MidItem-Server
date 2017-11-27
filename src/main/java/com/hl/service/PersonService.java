@@ -11,8 +11,14 @@ public interface PersonService {
 
 	List<Person> getTenPerson(Integer page, String keyword);
 
-	boolean addPerson(Person person,HttpServletRequest request) throws IOException;
+	Integer addPerson(Person person,HttpServletRequest request) throws IOException;
 
 	boolean deletePerson(Integer person_id);
+
+	Boolean updatePerson(Person person, HttpServletRequest request);
+
+	boolean addGood(Integer person_id);
+
+	List<Person> getTenRankList(Integer page);
 
 }

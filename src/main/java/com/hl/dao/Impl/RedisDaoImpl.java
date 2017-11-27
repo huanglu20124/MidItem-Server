@@ -1,7 +1,11 @@
 package com.hl.dao.Impl;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.solr.common.util.Hash;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.hl.dao.RedisDao;
@@ -68,5 +72,38 @@ public class RedisDaoImpl implements RedisDao {
 	@Override
 	public void addSelf(String key){
 		redisTemplate.opsForValue().increment(key, 1);
+	}
+
+	
+	@Override
+	public void addRankNum(Integer person_id) {
+		redisTemplate.opsForZSet().incrementScore("good_rank", person_id.toString(), Double.valueOf("1"));
+	}
+	
+	@Override
+	public List<Integer> getRankNum(Integer page){
+		Long start = new Integer(page*10).longValue();
+		Long end = start + 10;
+		Set<Object>set = null;
+		try {
+			set = redisTemplate.opsForZSet().reverseRange("good_rank", start, end);	
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		List<Integer>person_id_list = new ArrayList<>();
+		Iterator<Object>iterator = set.iterator();
+		while (iterator.hasNext()) {
+			Object object = iterator.next();
+			person_id_list.add(new Integer((String) object));
+		}
+		return person_id_list;
+	}
+
+	
+	@Override
+	public void removeRank(Integer person_id) {
+		redisTemplate.opsForZSet().remove("good_rank", person_id.toString());
+		
 	}
 }

@@ -9,7 +9,7 @@ public interface PersonDao {
 
 	public List<Person> getTenPersonKeyword(Integer page, String keyword);
 
-	public void addPerson(Person person);
+	public int addPerson(Person person);
 
 	public Person getPersonById(Integer person_id);
 
@@ -20,4 +20,8 @@ public interface PersonDao {
 	public void solrAddPerson(Person person);
 
 	public void solrDeletePersonByUuid(String uuid);
+
+	public Boolean updatePerson(Person person);
+
+	public void addGoodNum(Integer person_id, Integer good);
 }

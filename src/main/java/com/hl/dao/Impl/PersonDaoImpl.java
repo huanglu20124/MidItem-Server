@@ -1,8 +1,11 @@
 package com.hl.dao.Impl;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +19,11 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.aspectj.apache.bcel.generic.ReturnaddressType;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import com.hl.dao.PersonDao;
 import com.hl.domain.Person;
@@ -66,14 +72,38 @@ public class PersonDaoImpl extends JdbcDaoSupport implements PersonDao{
 
 
 	@Override
-	public void addPerson(Person person) {
-		String sql = "insert into person values(null,?,?,?,?,"
+	public int addPerson(final Person person) {
+		//返回主键
+		final String sql = "insert into person values(null,?,?,?,?,"
 				+ " ?,?,?,?,?,"
 				+ " ?,?,?,?);";
-		getJdbcTemplate().update(sql,person.getName(),person.getSex(),person.getCountry(),person.getPerson_date(),
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		getJdbcTemplate().update(new PreparedStatementCreator() {
+			
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+				PreparedStatement psm = connection.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+				psm.setString(1, person.getName());
+				psm.setString(2, person.getSex());
+				psm.setString(3, person.getCountry());
+				psm.setString(4, person.getPerson_date());
+				psm.setString(5, person.getHometown());
+				psm.setString(6, person.getDescription());
+				psm.setInt(7, person.getAbility());
+				psm.setInt(8, person.getGood());
+				psm.setString(9, person.getHead_url());
+				psm.setString(10, person.getAudio_url());
+				psm.setString(11, person.getSecond_name());
+				psm.setString(12, person.getUuid());
+				psm.setInt(13, person.getPerson_field());
+				return psm;
+			}
+		},keyHolder);
+/*		getJdbcTemplate().update(sql,person.getName(),person.getSex(),person.getCountry(),person.getPerson_date(),
 				person.getHometown(),person.getDescription(),person.getAbility(),person.getGood(),
-				person.getHead_url(),person.getAudio_url(),person.getSecond_name(),person.getUuid(),person.getPerson_field());
-		
+				person.getHead_url(),person.getAudio_url(),person.getSecond_name(),
+				person.getUuid(),person.getPerson_field(),keyHolder);*/
+		return keyHolder.getKey().intValue();		
 	}
 
 
@@ -180,6 +210,36 @@ public class PersonDaoImpl extends JdbcDaoSupport implements PersonDao{
 			}
 		}
 	}
+
+
 	
+	@Override
+	public Boolean updatePerson(Person person){
+		String sql = "update person set name=?, sex=?,country=?,person_date=?,hometown=?,"
+				+ " description=?, ability=?, good=?, head_url=?, audio_url=?, "
+				+ " second_name=? where person_id=?";
+		try {
+			getJdbcTemplate().update(sql,person.getName(), person.getSex(), person.getCountry(),
+					 person.getPerson_date(), person.getHometown(),
+					 person.getDescription(), person.getAbility(), person.getGood(),person.getHead_url(), person.getAudio_url(),
+					 person.getSecond_name(), person.getPerson_id());
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+		
+	}
+
+
 	
+	@Override
+	public void addGoodNum(Integer person_id, Integer good) {
+		String sql = "update person set good = ? where person_id = ?";
+		getJdbcTemplate().update(sql,good+1, person_id);
+		
+	}
+
+
+	
+
 }

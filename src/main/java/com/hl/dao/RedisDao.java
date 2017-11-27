@@ -1,5 +1,6 @@
 package com.hl.dao;
 
+import java.util.List;
 
 public interface RedisDao {
 	public void leftPush(String array_name,String uuid);
@@ -12,4 +13,7 @@ public interface RedisDao {
 	public void deleteKey(String key);
 	public void removeListIndex(String array_name,String uuid);
 	public void addSelf(String key);
+	public void addRankNum(Integer person_id);
+	public List<Integer> getRankNum(Integer page);
+	public void removeRank(Integer person_id);
 }

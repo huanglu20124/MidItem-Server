@@ -103,6 +103,15 @@ public class Person {
 		this.person_field = person_field;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		Person person = (Person) obj;
+		if(this.getPerson_id() == person.getPerson_id()){
+			return true;
+		}else {
+			return false;
+		}
+	}
 
  	
 }

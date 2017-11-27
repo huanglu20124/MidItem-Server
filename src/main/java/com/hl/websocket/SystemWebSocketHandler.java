@@ -81,7 +81,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
     		String game_id = request.getGame_id();
     		System.out.println("收到的game_id=" + game_id);
     		Game game = null;
-    		if(game_id != null && (game = (Game) games.get(game_id)) != null){
+    		if(game_id != null && (game = games.get(game_id)) != null){
     			System.out.println("得到游戏对象");
     			//结束游戏的请求在外面处理
     			if(request.getCode() == 1){
@@ -95,9 +95,14 @@ public class SystemWebSocketHandler implements WebSocketHandler {
  
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-        if(session.isOpen()){
+        //删除wait的key
+    	System.out.println("传输异常，websocket会话关闭");
+    	String wait_id = (String) redisDao.getValue("wait_id");
+    	if(wait_id!=null && wait_id.equals(session.getId())){
+    		redisDao.deleteKey("wait_id");
+    	}
+    	if(session.isOpen()){
             session.close();
-            System.out.println("传输异常，websocket会话关闭");
         }
         users.remove(session);
         log.debug("handleTransportError" + exception.getMessage());
