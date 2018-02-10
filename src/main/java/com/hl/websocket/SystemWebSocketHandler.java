@@ -35,7 +35,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	
 	private Logger log = LoggerFactory.getLogger(SystemWebSocketHandler.class);
 	
-    private static final ArrayList<WebSocketSession> users = new ArrayList<WebSocketSession>();
+    public static final ArrayList<WebSocketSession> users = new ArrayList<WebSocketSession>();
  
     @Resource(name="gameService")
     private GameService gameService;
